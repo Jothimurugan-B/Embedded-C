@@ -15,7 +15,7 @@ delay(2);
 
 void delay(unsigned int t)
 {
-T0PR=15000000-1; 
+T0PR=15000000-1; //Default Pclk value of LPC2129 is 15 MHZ.
 T0TCR=0X1;
 while(T0TC<t);
 T0TCR=0X3;
