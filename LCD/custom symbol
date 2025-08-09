@@ -1,0 +1,72 @@
+//Embedded C program to display custom symbol in LCD.
+#include<LPC21XX.H>
+#include"delay.h"  //including delay code as header
+
+#define LCD 0XFF
+#define RS 1<<8
+#define E 1<<9
+unsigned char lut[]={0X17,0X14,0X14,0X1F,0X05,0X05,0X1D,0X00, //swastik symbol
+                     0XE,0X0A,0X11,0X11,0X11,0X11,0X1F,0X00}; //battery symbol
+void init();
+void command(unsigned char);
+void string(unsigned char*);
+void cgram(unsigned char);
+void data(unsigned char);
+int main()
+{
+   init();
+   command(0X80);
+   string("symbol:");
+   cgram(16);
+   command(0X87); //DDRAM adress for displaying custom symbol
+   data(0);
+   data(1);
+  
+ }
+
+void cgram(unsigned char n)
+{
+  int i;
+  command(0X40);  //CGRAM address
+  for(i=0;i<n;i++)
+  data(lut[i]);
+}
+
+ void init()
+ {
+   IODIR0=0X3FF;
+   command(0X1);
+   command(0X2);
+   command(0X0C);
+   command(0X38);
+  }
+
+  void command(unsigned char cmd)
+  {
+  IOCLR0=LCD;
+	IOSET0=cmd;
+	IOCLR0=RS;
+	IOSET0=E;
+	delay_millisec(2);
+	IOCLR0=E;
+  }
+
+  void string(unsigned char* s) //for displaying the string"symbol:"
+  {
+    int i;
+    for(i=0;s[i];i++)
+	data(s[i]);
+  }
+
+  void data(unsigned char ch)
+  {
+  IOCLR0=LCD;
+	IOSET0=ch;
+	IOSET0=RS;
+	IOSET0=E;
+	delay_millisec(2);
+	IOCLR0=E;
+  }
+
+
+   
